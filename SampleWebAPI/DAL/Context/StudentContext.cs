@@ -1,16 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using SampleWebAPI.Models; 
+using SampleWebAPI.Models;
 
-namespace SampleWebAPI.Models
+namespace SampleWebAPI.DAL.Context
 {
     public class StudentContext : DbContext
     {
         public StudentContext(DbContextOptions<StudentContext> options) : base(options)
         {
-          
+
         }
 
-        public DbSet<Student> Students { get; set; } = null; 
+        public DbSet<Student> Students { get; set; } = null;
     }
 }

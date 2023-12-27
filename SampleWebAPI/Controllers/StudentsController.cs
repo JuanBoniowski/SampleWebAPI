@@ -5,6 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SampleWebAPI.DAL.Context;
+using SampleWebAPI.DAL.Implementation;
+using SampleWebAPI.DAL.Interface;
+using SampleWebAPI.DAL.Services.Implementation;
+using SampleWebAPI.DAL.Services.Interface;
 using SampleWebAPI.Models;
 
 namespace SampleWebAPI.Controllers
@@ -14,10 +19,14 @@ namespace SampleWebAPI.Controllers
     public class StudentsController : ControllerBase
     {
         private readonly StudentContext _context;
+        private readonly IGenericRepository<Student> _repo; 
+        private readonly IStudentService _studentService; 
 
         public StudentsController(StudentContext context)
         {
             _context = context;
+            _repo = new GenericRepsoitory<Student>(context);
+            _studentService = new StudentService(_repo, context); 
         }
 
         // GET: api/Students
@@ -28,9 +37,23 @@ namespace SampleWebAPI.Controllers
           {
               return NotFound();
           }
-            return await _context.Students.ToListAsync();
+            return _studentService.List(); 
         }
 
+        // POST: api/Students
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPost]
+        public async Task<ActionResult<Student>> PostStudent(Student student)
+        {
+          if (_context.Students == null)
+          {
+              return Problem("Entity set 'StudentContext.Students'  is null.");
+          }
+
+            _studentService.Create(student); 
+
+            return CreatedAtAction("GetStudent", new { id = student.Id }, student);
+        }
         // GET: api/Students/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Student>> GetStudent(int id)
@@ -39,7 +62,8 @@ namespace SampleWebAPI.Controllers
           {
               return NotFound();
           }
-            var student = await _context.Students.FindAsync(id);
+
+            var student = _studentService.GetById(id); 
 
             if (student == null)
             {
@@ -57,43 +81,13 @@ namespace SampleWebAPI.Controllers
             if (id != student.Id)
             {
                 return BadRequest();
-            }
+            }         
 
-            _context.Entry(student).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!StudentExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            _repo.Update(student);
 
             return NoContent();
         }
 
-        // POST: api/Students
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Student>> PostStudent(Student student)
-        {
-          if (_context.Students == null)
-          {
-              return Problem("Entity set 'StudentContext.Students'  is null.");
-          }
-            _context.Students.Add(student);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetStudent", new { id = student.Id }, student);
-        }
 
         // DELETE: api/Students/5
         [HttpDelete("{id}")]
@@ -103,14 +97,14 @@ namespace SampleWebAPI.Controllers
             {
                 return NotFound();
             }
-            var student = await _context.Students.FindAsync(id);
-            if (student == null)
-            {
-                return NotFound();
-            }
-
-            _context.Students.Remove(student);
-            await _context.SaveChangesAsync();
+            //var student = await _context.Students.FindAsync(id);
+            //if (student == null)
+            //{
+            //    return NotFound();
+            //}
+            _studentService.Delete(id); 
+            //_context.Students.Remove(student);
+            //await _context.SaveChangesAsync();
 
             return NoContent();
         }
