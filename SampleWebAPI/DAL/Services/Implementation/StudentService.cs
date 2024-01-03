@@ -17,9 +17,9 @@ namespace SampleWebAPI.DAL.Services.Implementation
             _context = context; 
         }
 
-        public List<Student> List()
+        public async Task<List<Student>> List()
         {
-            List<Student> listOfStudents = _context.Students.ToList();
+            List<Student> listOfStudents =await  _context.Students.ToListAsync();
             return listOfStudents; 
         }
         public Student Create(Student student)
@@ -36,6 +36,12 @@ namespace SampleWebAPI.DAL.Services.Implementation
         public Student Update(Student student)
         {
             Student studentEditing = GetById(student.Id);
+
+            if (studentEditing == null) {
+
+                return null; 
+            }
+
             studentEditing.Name = student.Name;
             studentEditing.Age = student.Age;
 
@@ -46,6 +52,10 @@ namespace SampleWebAPI.DAL.Services.Implementation
         public Student Delete(int id)
         {
             Student student = GetById(id); 
+            if (student == null)
+            {
+                return null; 
+            }
             _repo.Delete(student);
             return null; 
         }

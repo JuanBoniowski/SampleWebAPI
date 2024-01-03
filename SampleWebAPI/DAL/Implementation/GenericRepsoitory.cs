@@ -15,7 +15,6 @@ namespace SampleWebAPI.DAL.Implementation
         {
             this._context = dbContext; 
         }
-
         public void Insert(TEntity entity)
         {
             _context.Set<TEntity>().Add(entity);

@@ -37,7 +37,7 @@ namespace SampleWebAPI.Controllers
           {
               return NotFound();
           }
-            return _studentService.List(); 
+            return await _studentService.List(); 
         }
 
         // POST: api/Students
@@ -81,9 +81,9 @@ namespace SampleWebAPI.Controllers
             if (id != student.Id)
             {
                 return BadRequest();
-            }         
+            }
 
-            _repo.Update(student);
+            _studentService.Update(student);            
 
             return NoContent();
         }
@@ -97,15 +97,9 @@ namespace SampleWebAPI.Controllers
             {
                 return NotFound();
             }
-            //var student = await _context.Students.FindAsync(id);
-            //if (student == null)
-            //{
-            //    return NotFound();
-            //}
-            _studentService.Delete(id); 
-            //_context.Students.Remove(student);
-            //await _context.SaveChangesAsync();
 
+            _studentService.Delete(id); 
+  
             return NoContent();
         }
 
