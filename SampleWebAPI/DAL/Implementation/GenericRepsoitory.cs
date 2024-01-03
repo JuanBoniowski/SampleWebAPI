@@ -15,31 +15,51 @@ namespace SampleWebAPI.DAL.Implementation
         {
             this._context = dbContext; 
         }
-        public void Insert(TEntity entity)
+        public async Task<TEntity> Insert(TEntity entity)
         {
             _context.Set<TEntity>().Add(entity);
-            _context.SaveChanges(); 
+            await _context.SaveChangesAsync();
+
+            return entity; 
         }
-        public void Update(TEntity entity)
+        public async Task<bool> Update(TEntity entity)
         {
-            _context.Update(entity); 
-            _context.SaveChanges();
+            try
+            {
+                _context.Update(entity);
+                await _context.SaveChangesAsync();
+                return true; 
+            }
+            catch (Exception)
+            {
+
+                return false; 
+            }
+
+
         }
-        public TEntity GetEntity(TEntity entity)
+        public async Task<TEntity> GetEntity(TEntity entity)
         {
-            TEntity entityByID= _context.Set<TEntity>().Where(entity => entity == entity).FirstOrDefault();
+            TEntity entityByID= await _context.Set<TEntity>().Where(entity => entity == entity).FirstOrDefaultAsync();
             return entityByID; 
         }
-        public void Delete(TEntity entity)
+        public async Task<bool> Delete(TEntity entity)
         {
-            _context.Remove(entity);
-            _context.SaveChanges();
+
+            try
+            {
+                _context.Remove(entity);
+                await _context.SaveChangesAsync();
+                return true; 
+            }
+            catch 
+            {
+                return false; 
+            }
+
         }
-        public void Save()
-        {
-            throw new NotImplementedException();
-        }
-        public IQueryable<TEntity> Consult(Expression<Func<TEntity, bool>> filter = null)
+
+        public async Task<IQueryable<TEntity>> Consult(Expression<Func<TEntity, bool>> filter = null)
         {
             IQueryable<TEntity> queryEntidad = filter == null ? _context.Set<TEntity>() : _context.Set<TEntity>().Where(filter);
             return queryEntidad;

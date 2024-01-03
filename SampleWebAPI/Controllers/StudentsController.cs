@@ -50,7 +50,7 @@ namespace SampleWebAPI.Controllers
               return Problem("Entity set 'StudentContext.Students'  is null.");
           }
 
-            _studentService.Create(student); 
+            await _studentService.Create(student); 
 
             return CreatedAtAction("GetStudent", new { id = student.Id }, student);
         }
@@ -63,7 +63,7 @@ namespace SampleWebAPI.Controllers
               return NotFound();
           }
 
-            var student = _studentService.GetById(id); 
+            var student = await _studentService.GetById(id); 
 
             if (student == null)
             {
@@ -83,7 +83,7 @@ namespace SampleWebAPI.Controllers
                 return BadRequest();
             }
 
-            _studentService.Update(student);            
+           await _studentService.Update(student);            
 
             return NoContent();
         }
@@ -98,7 +98,7 @@ namespace SampleWebAPI.Controllers
                 return NotFound();
             }
 
-            _studentService.Delete(id); 
+            await _studentService.Delete(id); 
   
             return NoContent();
         }

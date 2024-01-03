@@ -22,20 +22,20 @@ namespace SampleWebAPI.DAL.Services.Implementation
             List<Student> listOfStudents =await  _context.Students.ToListAsync();
             return listOfStudents; 
         }
-        public Student Create(Student student)
-        {
-            _repo.Insert(student);
+        public async Task<Student> Create(Student student)
+        {                   
+            await _repo.Insert(student);
             return student; 
         }
-        public Student GetById(int id)
+        public async Task<Student> GetById(int id)
         {
-            IQueryable<Student> query = _repo.Consult(i=>i.Id==id);
-            return query.FirstOrDefault();
+            IQueryable<Student> query = await _repo.Consult(i=>i.Id==id);
+            return await query.FirstOrDefaultAsync();
             
         }
-        public Student Update(Student student)
+        public async Task<Student> Update(Student student)
         {
-            Student studentEditing = GetById(student.Id);
+            Student studentEditing = await GetById(student.Id);
 
             if (studentEditing == null) {
 
@@ -45,18 +45,18 @@ namespace SampleWebAPI.DAL.Services.Implementation
             studentEditing.Name = student.Name;
             studentEditing.Age = student.Age;
 
-            _repo.Update(studentEditing); 
+            await _repo.Update(studentEditing); 
 
             return studentEditing;
         }
-        public Student Delete(int id)
+        public async Task<Student> Delete(int id)
         {
-            Student student = GetById(id); 
+            Student student =await GetById(id); 
             if (student == null)
             {
                 return null; 
             }
-            _repo.Delete(student);
+            await _repo.Delete(student);
             return null; 
         }
 
